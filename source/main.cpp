@@ -44,6 +44,12 @@ int main() {
   }
   std::cout << std::endl;
   std::cout << std::endl;
+  std::cout << "After swap() method:" << std::endl;
+  for (size_t i = 0; i < a.size(); ++i) {
+    std::cout << a[i] << " ";
+  }
+  std::cout << std::endl;
+  std::cout << std::endl;
   for (size_t i = 0; i < a.size(); ++i) {
     std::cout << a.at(i) << " ";
   }
@@ -80,6 +86,31 @@ int main() {
   for (size_t i = 0; i < a.size(); ++i) {
     a.push_back(5);
   }
+
+
+  // kb::Vector<int> a(5, 1);
+  // kb::Vector<int> b(4, 2);
+  
+  // std::cout << "Before swap() method:" << std::endl;
+  // for (size_t i = 0; i < a.size(); ++i) {
+  //   std::cout << a[i] << " ";
+  // }
+  // std::cout << std::endl;
+  // for (size_t i = 0; i < b.size(); ++i) {
+  //   std::cout << b[i] << " ";
+  // }
+  // std::cout << std::endl << std::endl;
+
+  // std::cout << "After swap() method:" << std::endl;
+  // a.swap(b);
+  // for (size_t i = 0; i < a.size(); ++i) {
+  //   std::cout << a[i] << " ";
+  // }
+  // std::cout << std::endl;
+  // for (size_t i = 0; i < b.size(); ++i) {
+  //   std::cout << b[i] << " ";
+  // }
+  // std::cout << std::endl;
   
   return 0;
 }

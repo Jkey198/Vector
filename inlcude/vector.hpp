@@ -58,22 +58,22 @@ public:
   /* capacity */
   bool empty() const; // * DONE
   size_type size() const; // * DONE
-  size_type max_size() const; // ???
+  size_type max_size() const; // * DONE
   void reserve(size_type __size); // * DONE
-  size_type capacity() const; // ???
-  void shrink_to_fit(); // ???
+  size_type capacity() const; // * DONE
+  void shrink_to_fit(); // * DONE
 
   /* methods for work with elements */
   void clear(); // * DONE
-  void push_back(const_reference __value);
-  void pop_back();
-  void resize(size_type __size);
-  void swap(iterator __first, iterator __second);
+  void push_back(value_type value); // ! LATER
+  void pop_back(); // * DONE
+  void resize(size_type __size); // * DONE
+  void swap(Vector& __other); // * DONE
 
 private:
   iterator  __begin_  = nullptr;
   iterator  __end_    = nullptr;
-  T*        __data_;
+  iterator  __data_;
   size_type __size_;
   size_type __capacity_;
 };
@@ -84,8 +84,8 @@ Vector<T>::Vector() : __begin_(0), __end_(0), __data_(0), __size_(0), __capacity
 template<typename T>
 Vector<T>::Vector(size_type __size, value_type __value) {
   __size_ = __size;
-  __capacity_ = std::pow(2, std::sqrt(__size_));
-  __data_ = new T[__size_];
+  __capacity_ = std::pow(2, std::ceil(std::log2(__size_)));
+  __data_ = new T[__capacity_];
   for (size_type i = 0; i < __size_; ++i) {
     *(__data_ + i) = __value;
   }
@@ -97,7 +97,7 @@ template<typename T>
 Vector<T>::Vector(const Vector& __other) {
   __size_ = __other.__size_;
   __capacity_ = __other.__capacity_;
-  __data_ = new T[__size_];
+  __data_ = new T[__capacity_];
   for (size_type i = 0; i < __size_; ++i) {
     *(__data_ + i) = *(__other.__data_ + i);
   }
@@ -114,15 +114,17 @@ template<typename T>
 typename Vector<T>::reference Vector<T>::operator=(const Vector& __other) {
   if (this != &__other) {
     delete[] __data_;
+    __begin_ = __end_ = nullptr;
     
-    __begin_ = __other.__begin_;
-    __end_ = __other.__end_;
-    __data_ = new T[__size_];
     __size_ = __other.__size_;
     __capacity_ = __other.__capacity_;
+    __data_ = new T[__capacity_];
     for (size_type i = 0; i < __size_; ++i) {
       *(__data_ + i) = *(__other.__data_ + i);
     }
+    
+    __begin_ = __data_;
+    __end_ = __data_ + __size_;
   }
 
   return *this;
@@ -134,7 +136,7 @@ void Vector<T>::assign(size_type __size, const_reference __value) {
   
   __size_ = __size;
   __capacity_ = __size; // * for first time
-  __data_ = new T[__size_];
+  __data_ = new T[__capacity_];
   __begin_ = __data_;
   __end_ = __data_ + __size_;
   for (size_type i = 0; i < __size_; ++i) {
@@ -144,25 +146,29 @@ void Vector<T>::assign(size_type __size, const_reference __value) {
 
 template<typename T>
 typename Vector<T>::reference Vector<T>::at(size_type __pos) {
-  if (__pos < 0 || __pos >= __size_) throw std::runtime_error("Could not find element - invalid index");
+  if (__pos < 0 || __pos >= __size_)
+    throw std::runtime_error("Could not find element - invalid index");
   return *(__data_ + __pos);
 }
 
 template<typename T>
 typename Vector<T>::const_reference Vector<T>::at(size_type __pos) const {
-  if (__pos < 0 || __pos >= __size_) throw std::runtime_error("Could not find element - invalid index");
+  if (__pos < 0 || __pos >= __size_)
+    throw std::runtime_error("Could not find element - invalid index");
   return *(__data_ + __pos);
 }
 
 template<typename T>
 typename Vector<T>::reference Vector<T>::operator[](size_type __pos) {
-  if (__pos < 0 || __pos >= __size_) throw std::runtime_error("Could not find element - invalid index");
+  if (__pos < 0 || __pos >= __size_)
+    throw std::runtime_error("Could not find element - invalid index");
   return *(__data_ + __pos);
 }
 
 template<typename T>
 typename Vector<T>::const_reference Vector<T>::operator[](size_type __pos) const {
-  if (__pos < 0 || __pos >= __size_) throw std::runtime_error("Could not find element - invalid index");
+  if (__pos < 0 || __pos >= __size_)
+    throw std::runtime_error("Could not find element - invalid index");
   return *(__data_ + __pos);
 }
 
@@ -218,21 +224,32 @@ typename Vector<T>::size_type Vector<T>::size() const {
 
 template<typename T>
 typename Vector<T>::size_type Vector<T>::max_size() const {
-  return __capacity_; // ??? or __size_ ???
+  return static_cast<size_type>(-1) / sizeof(T);
 }
 
 template<typename T>
-void Vector<T>::reserve(size_type __size) {
-  delete[] __data_;
-  __size_ = __size;
-  __data_ = new T[__size_];
+void Vector<T>::reserve(size_type __new_capacity) {
+  if (__new_capacity > max_size())
+    throw std::length_error("Vector");
+  if (__new_capacity <= __capacity_) return;
+
+  
+  iterator old_data = __data_;
+  __begin_ = __end_ = nullptr;
+  __data_ = new T[__capacity_];
+  __capacity_ = __new_capacity;
+  for (size_type i = 0; i < __size_; ++i) {
+    *(__data_ + i) = *(old_data + i);
+  }
+
+  delete[] old_data;
+  __begin_ = __data_;
   __end_ = __data_ + __size_;
-  for (size_type i = 0; i < __size_; ++i) *(__data_ + i) = 0;
 }
 
 template<typename T>
 typename Vector<T>::size_type Vector<T>::capacity() const {
-  return __capacity_; // ???
+  return __capacity_;
 }
 
 template<typename T>
@@ -240,8 +257,6 @@ void Vector<T>::shrink_to_fit() {
   if (__size_ < __capacity_) {
     __capacity_ = __size_;
   }
-  //TODO: make capacity lower, like __size (do we have field 'capacity' ??)
-  // * as we can see - ya
 }
 
 template<typename T>
@@ -256,13 +271,27 @@ void Vector<T>::clear() {
 }
 
 template<typename T>
-void Vector<T>::push_back(const_reference __value) {
-  if (__size_ == __capacity_) {
-    __capacity_ *= 2;
-    __size_ += 1;
+void Vector<T>::push_back(value_type __value) {
+  if (__capacity_ == __size_) {
+    __capacity_ = (__capacity_ == 0) ? 1 : __capacity_ * 2;
   }
-  __end_ += 1;
+  
+  // reserve(__size_ + 1);
+  // *(__data_ + __size_ - 1) = __value;
+  
+  iterator old_data = __data_;
+  __begin_ = __end_ = nullptr;
+  __data_ = new T[__capacity_];
+  for (size_type i = 0; i < __size_; ++i) {
+    *(__data_ + i) = *(old_data + i);
+  }
   *(__data_ + __size_) = __value;
+  __size_ += 1;
+
+  delete[] old_data;
+
+  __begin_ = __data_;
+  __end_ = __data_ + __size_;
 }
 
 template<typename T>
@@ -277,8 +306,8 @@ void Vector<T>::resize(size_type __size) {
     return;
   } else {
     __size_ = __size;
-    T* old_data = __data_;
-    __data_ = new T[__size_];
+    iterator old_data = __data_;
+    __data_ = new T[__capacity_];
     for (size_type i = 0; i < __size_; ++i) {
       *(__data_ + i) = *(old_data + i);
     }
@@ -287,15 +316,29 @@ void Vector<T>::resize(size_type __size) {
 }
 
 template<typename T>
-void Vector<T>::swap(iterator __first, iterator __second) {
-  if (__first >= __begin_ && __first < __end_ &&
-    __second >= __begin_ && __second < __end_) {
-    value_type tmp = *__first;
-    *__first = *__second;
-    *__second = tmp;
-  } else {
-    throw std::runtime_error("Failed to find element");
-  }
+void Vector<T>::swap(Vector& __other) {
+  // ! that looks like trash, but it works...
+
+  if (__other.__begin_ == nullptr && __other.__begin_ == nullptr)
+    throw std::runtime_error("Vector");
+  
+  iterator  cnt_data      = __data_;
+  iterator  cnt_begin     = __begin_;
+  iterator  cnt_end       = __end_;
+  size_type cnt_size      = __size_;
+  size_type cnt_capacity  = __capacity_;
+
+  __data_     = __other.__data_;
+  __begin_    = __other.__begin_;
+  __end_      = __other.__end_;
+  __size_     = __other.__size_;
+  __capacity_ = __other.__capacity_;
+  
+  __other.__data_     = cnt_data;
+  __other.__begin_    = cnt_begin;
+  __other.__end_      = cnt_end;
+  __other.__size_     = cnt_size;
+  __other.__capacity_ = cnt_capacity;
 }
 
 } // namespace kb
