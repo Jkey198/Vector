@@ -1,24 +1,39 @@
+# Compiler and flags
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude
-SRCDIR = source
-OBJDIR = build
+
+# Directories
+SRC_DIR = source
+BUILD_DIR = build
+INCLUDE_DIR = inlcude
+
+# Source files
+SRCS = $(SRC_DIR)/main.cpp
+
+# Object files
+OBJS = $(BUILD_DIR)/main.o
+
+# Target executable
 TARGET = vector_app
 
-SOURCES = $(SRCDIR)/main.cpp $(SRCDIR)/vector.cpp
-OBJECTS = $(OBJDIR)/main.o $(OBJDIR)/vector.o
+# Default target
+all: $(BUILD_DIR) $(TARGET)
 
-all: $(TARGET)
+# Create build directory
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+# Link object files to create executable
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $(TARGET)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Compile main.cpp (header-only template implementation)
+$(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp $(INCLUDE_DIR)/vector.hpp
+	$(CXX) $(CXXFLAGS) -c $(SRC_DIR)/main.cpp -o $(BUILD_DIR)/main.o
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
-
+# Clean build artifacts
 clean:
-	rm -rf $(OBJDIR) $(TARGET)
+	rm -rf $(BUILD_DIR) $(TARGET)
 
+# Phony targets
 .PHONY: all clean
