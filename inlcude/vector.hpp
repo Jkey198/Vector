@@ -65,9 +65,9 @@ public:
 
   /* methods for work with elements */
   void clear(); // * DONE
-  void push_back(value_type value); // ! LATER
+  void push_back(value_type value); // ! DO NTHING
   void pop_back(); // * DONE
-  void resize(size_type __size); // * DONE
+  void resize(size_type __size); // ! SEG FAULT
   void swap(Vector& __other); // * DONE
 
 private:
@@ -233,10 +233,9 @@ void Vector<T>::reserve(size_type __new_capacity) {
     throw std::length_error("Vector");
   if (__new_capacity <= __capacity_) return;
 
-  
   iterator old_data = __data_;
+  __data_ = new T[__new_capacity];
   __begin_ = __end_ = nullptr;
-  __data_ = new T[__capacity_];
   __capacity_ = __new_capacity;
   for (size_type i = 0; i < __size_; ++i) {
     *(__data_ + i) = *(old_data + i);
@@ -255,7 +254,18 @@ typename Vector<T>::size_type Vector<T>::capacity() const {
 template<typename T>
 void Vector<T>::shrink_to_fit() {
   if (__size_ < __capacity_) {
+    iterator old_data = __data_;
     __capacity_ = __size_;
+    __data_ = new T[__capacity_];
+    __begin_ = __end_ = nullptr;
+
+    for (size_type i = 0; i < __size_; ++i) {
+      *(__data_ + i) = *(old_data + i);
+    }
+
+    delete[] old_data;
+    __begin_ = __data_;
+    __end_ = __data_ + __size_;
   }
 }
 
@@ -272,12 +282,12 @@ void Vector<T>::clear() {
 
 template<typename T>
 void Vector<T>::push_back(value_type __value) {
+  if (__size_ + 1 > max_size())
+    throw std::length_error("Vector");
+  
   if (__capacity_ == __size_) {
     __capacity_ = (__capacity_ == 0) ? 1 : __capacity_ * 2;
   }
-  
-  // reserve(__size_ + 1);
-  // *(__data_ + __size_ - 1) = __value;
   
   iterator old_data = __data_;
   __begin_ = __end_ = nullptr;
@@ -304,14 +314,24 @@ template<typename T>
 void Vector<T>::resize(size_type __size) {
   if (__size == __size_) {
     return;
-  } else {
-    __size_ = __size;
+  }
+
+  if (__size > __capacity_) {
+    if (__size > max_size())
+      throw std::length_error("Vector");
+    
     iterator old_data = __data_;
+    __size_ = __size;
+    __capacity_ = std::pow(2, std::ceil(std::log2(__size_)));
     __data_ = new T[__capacity_];
+    __begin_ = __end_ = nullptr;
     for (size_type i = 0; i < __size_; ++i) {
       *(__data_ + i) = *(old_data + i);
     }
+
     delete[] old_data;
+    __begin_ = __data_;
+    __end_ = __data_ + __size_;
   }
 }
 
