@@ -1,5 +1,5 @@
-// #define VECTOR_HPP
-// #ifndef VECTOR_HPP
+#ifndef VECTOR_HPP
+#define VECTOR_HPP
 
 #include <cstddef>
 #include <cmath>
@@ -36,7 +36,7 @@ public:
   ~Vector(); // * DONE
 
   /* operators */
-  reference operator=(const Vector& __other); // * DONE
+  Vector& operator=(const Vector& __other); // * DONE
   void assign(size_type __size, const_reference __value); // * DONE
 
   /* element access */
@@ -55,40 +55,42 @@ public:
   iterator begin(); // * DONE
   iterator end(); // * DONE
   
-  /* capacity */
-  bool empty() const; // * DONE
+  /* memory */
+  bool      empty() const; // * DONE
   size_type size() const; // * DONE
   size_type max_size() const; // * DONE
-  void reserve(size_type __size); // * DONE
+  void      reserve(size_type __size); // * DONE
   size_type capacity() const; // * DONE
-  void shrink_to_fit(); // * DONE
+  void      shrink_to_fit(); // * DONE
 
-  /* methods for work with elements */
+  /* methods for working with elements */
   void clear(); // * DONE
-  void push_back(value_type value); // ! DO NTHING
+  void push_back(value_type value); // * DONE
   void pop_back(); // * DONE
-  void resize(size_type __size); // ! SEG FAULT
+  void resize(size_type __size); // * DONE
   void swap(Vector& __other); // * DONE
 
 private:
-  iterator  __begin_  = nullptr;
-  iterator  __end_    = nullptr;
+  iterator  __begin_;
+  iterator  __end_;
   iterator  __data_;
   size_type __size_;
   size_type __capacity_;
 };
 
 template<typename T>
-Vector<T>::Vector() : __begin_(0), __end_(0), __data_(0), __size_(0), __capacity_(0) {}
+Vector<T>::Vector() : __begin_(nullptr), __end_(nullptr), __data_(nullptr), __size_(0), __capacity_(0) {}
 
 template<typename T>
 Vector<T>::Vector(size_type __size, value_type __value) {
   __size_ = __size;
   __capacity_ = 2 * __size_;
   __data_ = new T[__capacity_];
+  
   for (size_type i = 0; i < __size_; ++i) {
     *(__data_ + i) = __value;
   }
+  
   __begin_ = __data_;
   __end_ = __data_ + __size_;
 }
@@ -97,10 +99,12 @@ template<typename T>
 Vector<T>::Vector(const Vector& __other) {
   __size_ = __other.__size_;
   __capacity_ = __other.__capacity_;
+  
   __data_ = new T[__capacity_];
   for (size_type i = 0; i < __size_; ++i) {
     *(__data_ + i) = *(__other.__data_ + i);
   }
+
   __begin_ = __data_;
   __end_ = __data_ + __size_;
 }
@@ -111,13 +115,14 @@ Vector<T>::~Vector() {
 }
 
 template<typename T>
-typename Vector<T>::reference Vector<T>::operator=(const Vector& __other) {
+Vector<T>& Vector<T>::operator=(const Vector& __other) {
   if (this != &__other) {
     delete[] __data_;
     __begin_ = __end_ = nullptr;
     
     __size_ = __other.__size_;
     __capacity_ = __other.__capacity_;
+    
     __data_ = new T[__capacity_];
     for (size_type i = 0; i < __size_; ++i) {
       *(__data_ + i) = *(__other.__data_ + i);
@@ -285,22 +290,12 @@ void Vector<T>::push_back(value_type __value) {
   if (__size_ + 1 > max_size())
     throw std::length_error("Vector");
   
-  if (__capacity_ == __size_) {
-    __capacity_ = (__capacity_ == 0) ? 1 : __capacity_ * 2;
+  if (__size_ == __capacity_) {
+    size_type new_capacity = (__capacity_ == 0) ? 1 : __capacity_ * 2;
+    reserve(new_capacity);
   }
   
-  iterator old_data = __data_;
-  __begin_ = __end_ = nullptr;
-  __data_ = new T[__capacity_];
-  for (size_type i = 0; i < __size_; ++i) {
-    *(__data_ + i) = *(old_data + i);
-  }
-  *(__data_ + __size_) = __value;
-  __size_ += 1;
-
-  delete[] old_data;
-
-  __begin_ = __data_;
+  *(__data_ + (__size_++)) = __value;
   __end_ = __data_ + __size_;
 }
 
@@ -320,26 +315,25 @@ void Vector<T>::resize(size_type __size) {
     if (__size > max_size())
       throw std::length_error("Vector");
     
-    iterator old_data = __data_;
-    __capacity_ = __size;
-    __data_ = new T[__capacity_];
-    __begin_ = __end_ = nullptr;
-    for (size_type i = 0; i < __size_; ++i) {
-      *(__data_ + i) = *(old_data + i);
+    size_type old_size = __size_;
+    size_type new_capacity = std::pow(2, std::ceil(std::log2(__size)));
+    reserve(new_capacity);
+    
+    // Initialize new elements with default value
+    for (size_type i = old_size; i < __size; ++i) {
+      __data_[i] = T();
     }
-
-    delete[] old_data;
-    __begin_ = __data_;
-    __end_ = __data_ + __size_;
-    __size_ = __size;
   }
+  
+  __size_ = __size;
+  __end_ = __data_ + __size_;
 }
 
 template<typename T>
 void Vector<T>::swap(Vector& __other) {
   // ! that looks like trash, but it works...
 
-  if (__other.__begin_ == nullptr && __other.__begin_ == nullptr)
+  if (__other.__begin_ == nullptr && __other.__end_ == nullptr)
     throw std::runtime_error("Vector");
   
   iterator  cnt_data      = __data_;
@@ -363,4 +357,4 @@ void Vector<T>::swap(Vector& __other) {
 
 } // namespace kb
 
-// #endif /* VECTOR_HPP */
+#endif /* VECTOR_HPP */
