@@ -19,9 +19,46 @@ void sep() {
 int main() {
   // working with capacity
   
-  std::cout << std::endl << std::endl << std::endl;
+  /*std::cout << std::endl << std::endl << std::endl;
+
+  std::vector<int> vec(5);            //An array A of capacity 5
+
+  //Print
+  std::cout << "---------- BEFORE ---------------" << std::endl;
+  std::cout << "capacity = " << vec.capacity() << std::endl;
+  std::cout << "size = " << vec.size() << std::endl;
   
-  std::vector<int> vec1;
+
+  //Add 2 additional elemetns to the end of A
+  vec.push_back(10);
+  vec.push_back(20);
+
+  //Print
+  std::cout << "---------- AFTER ---------------" << std::endl;
+  std::cout << "capacity = " << vec.capacity() << std::endl;
+  std::cout << "size = " << vec.size() << std::endl;
+  
+  sep();
+  sep();
+  
+  std::vector<int> Vec(5);            //An array A of capacity 5
+
+  //Print
+  std::cout << "---------- BEFORE ---------------" << std::endl;
+  std::cout << "capacity = " << Vec.capacity() << std::endl;
+  std::cout << "size = " << Vec.size() << std::endl;
+  
+
+  //Add 2 additional elemetns to the end of A
+  Vec.push_back(10);
+  Vec.push_back(20);
+
+  //Print
+  std::cout << "---------- AFTER ---------------" << std::endl;
+  std::cout << "capacity = " << Vec.capacity() << std::endl;
+  std::cout << "size = " << Vec.size() << std::endl;*/
+  
+  /*std::vector<int> vec1;
   kb::Vector<int> Vec1;
 
   printStdVectorCapacity(vec1);
@@ -40,9 +77,9 @@ int main() {
   Vec1.resize(6);
   printKbVectorCapacity(Vec1);
   Vec1.shrink_to_fit();
-  printKbVectorCapacity(Vec1);
+  printKbVectorCapacity(Vec1);*/
   
-  /*kb::Vector<int> a;
+  kb::Vector<int> a;
   a.reserve(6);
   for (size_t i = 0; i < a.size(); ++i) {
     std::cout << a[i] << " ";
@@ -142,11 +179,11 @@ int main() {
   std::cout << "====================================" << std::endl;
   std::cout << std::endl;
 
-  std::vector<int> huy;
   kb::Vector<int> b(6);
   for (auto i : b) {
     std::cout << i << " ";
-  }*/
+  }
+  std::cout << std::endl;
   
   // kb::Vector<int> a(5, 1);
   // kb::Vector<int> b(4, 2);
