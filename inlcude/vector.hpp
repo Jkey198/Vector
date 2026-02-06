@@ -73,7 +73,7 @@ Vector<T>::Vector() : __begin_(nullptr), __end_(nullptr), __data_(nullptr), __si
 template<typename T>
 Vector<T>::Vector(size_type __size, value_type __value) {
   __size_ = __size;
-  __capacity_ = 2 * __size_;
+  __capacity_ = __size_;
   __data_ = new T[__capacity_];
   
   for (size_type i = 0; i < __size_; ++i) {

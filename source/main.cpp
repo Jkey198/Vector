@@ -2,8 +2,47 @@
 #include "../inlcude/vector.hpp"
 #include <vector>
 
+template<typename T>
+void printStdVectorCapacity(std::vector<T>& a) {
+  std::cout << "std::vector capacity: " << a.capacity() << std::endl;
+}
+
+template<typename T>
+void printKbVectorCapacity(kb::Vector<T>& a) {
+  std::cout << "kb::Vector capacity: " << a.capacity() << std::endl;
+}
+
+void sep() {
+  std::cout << std::endl;
+}
+
 int main() {
-  kb::Vector<int> a;
+  // working with capacity
+  
+  std::cout << std::endl << std::endl << std::endl;
+  
+  std::vector<int> vec1;
+  kb::Vector<int> Vec1;
+
+  printStdVectorCapacity(vec1);
+  vec1.assign(10, 1);
+  printStdVectorCapacity(vec1);
+  vec1.resize(6);
+  printStdVectorCapacity(vec1);
+  vec1.shrink_to_fit();
+  printStdVectorCapacity(vec1);
+
+  sep();
+
+  printKbVectorCapacity(Vec1);
+  Vec1.assign(10, 1);
+  printKbVectorCapacity(Vec1);
+  Vec1.resize(6);
+  printKbVectorCapacity(Vec1);
+  Vec1.shrink_to_fit();
+  printKbVectorCapacity(Vec1);
+  
+  /*kb::Vector<int> a;
   a.reserve(6);
   for (size_t i = 0; i < a.size(); ++i) {
     std::cout << a[i] << " ";
@@ -107,7 +146,7 @@ int main() {
   kb::Vector<int> b(6);
   for (auto i : b) {
     std::cout << i << " ";
-  }
+  }*/
   
   // kb::Vector<int> a(5, 1);
   // kb::Vector<int> b(4, 2);
