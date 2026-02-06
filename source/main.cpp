@@ -66,7 +66,7 @@ int main() {
   std::cout << "====================================" << std::endl;
   std::cout << "====================================" << std::endl;
   std::cout << std::endl;
-
+  
   if (!a.empty()) {
     std::cout << "yapi!" << std::endl;
   } else {
@@ -80,20 +80,35 @@ int main() {
   } else {
     std::cout << "not yapi..." << std::endl;
   }
-
+  
   std::cout << "Check push_back() method (pop_back() already checked):" << std::endl;
   std::cout << a.capacity() << std::endl;
   a.resize(5);
-  // for (size_t i = 0; i < a.size(); ++i) {
-  //   a.push_back(5);
-  // }
   for (size_t i = 0; i < a.size(); ++i) {
-    std::cout << a.at(i) << " ";
+    a[i] = i;
+  }
+  size_t boba = a.size();
+  for (size_t i = 0; i < boba; ++i) {
+    a.push_back(5);
+  }
+  
+  std::cout << a.capacity() << std::endl;
+  for (size_t i = 0; i < a.size(); ++i) {
+    std::cout << a[i] << " ";
   }
   std::cout << std::endl;
   std::cout << std::endl;
+  
+  std::cout << "====================================" << std::endl;
+  std::cout << "====================================" << std::endl;
+  std::cout << std::endl;
 
-
+  std::vector<int> huy;
+  kb::Vector<int> b(6);
+  for (auto i : b) {
+    std::cout << i << " ";
+  }
+  
   // kb::Vector<int> a(5, 1);
   // kb::Vector<int> b(4, 2);
   

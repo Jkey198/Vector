@@ -84,7 +84,7 @@ Vector<T>::Vector() : __begin_(0), __end_(0), __data_(0), __size_(0), __capacity
 template<typename T>
 Vector<T>::Vector(size_type __size, value_type __value) {
   __size_ = __size;
-  __capacity_ = std::pow(2, std::ceil(std::log2(__size_)));
+  __capacity_ = 2 * __size_;
   __data_ = new T[__capacity_];
   for (size_type i = 0; i < __size_; ++i) {
     *(__data_ + i) = __value;
@@ -321,8 +321,7 @@ void Vector<T>::resize(size_type __size) {
       throw std::length_error("Vector");
     
     iterator old_data = __data_;
-    __size_ = __size;
-    __capacity_ = std::pow(2, std::ceil(std::log2(__size_)));
+    __capacity_ = __size;
     __data_ = new T[__capacity_];
     __begin_ = __end_ = nullptr;
     for (size_type i = 0; i < __size_; ++i) {
@@ -332,6 +331,7 @@ void Vector<T>::resize(size_type __size) {
     delete[] old_data;
     __begin_ = __data_;
     __end_ = __data_ + __size_;
+    __size_ = __size;
   }
 }
 
