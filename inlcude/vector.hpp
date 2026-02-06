@@ -4,17 +4,6 @@
 #include <cstddef>
 #include <cmath>
 #include <exception>
-// #include <__type_traits/conditional.h>
-// #include <__type_traits/enable_if.h>
-// #include <__type_traits/is_allocator.h>
-// #include <__type_traits/is_constant_evaluated.h>
-// #include <__type_traits/is_constructible.h>
-// #include <__type_traits/is_nothrow_assignable.h>
-// #include <__type_traits/is_nothrow_constructible.h>
-// #include <__type_traits/is_pointer.h>
-// #include <__type_traits/is_same.h>
-// #include <__type_traits/is_trivially_relocatable.h>
-// #include <__type_traits/type_identity.h>
 
 namespace kb {
 template<typename T>
