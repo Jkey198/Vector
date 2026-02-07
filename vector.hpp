@@ -106,13 +106,18 @@ Vector<T>::~Vector() {
     __data_[i]->~T();
   }::operator delete(__data_);*/
   delete[] __data_;
+  __data_ = nullptr;
+  __begin_ = nullptr;
+  __end_ = nullptr;
 }
 
 template<typename T>
 Vector<T>& Vector<T>::operator=(const Vector& __other) {
   if (this != &__other) {
     delete[] __data_;
-    __begin_ = __end_ = nullptr;
+    __data_ = nullptr;
+    __begin_ = nullptr;
+    __end_ = nullptr;
     
     __size_ = __other.__size_;
     __capacity_ = __other.__capacity_;
@@ -133,6 +138,9 @@ Vector<T>& Vector<T>::operator=(const Vector& __other) {
 template<typename T>
 void Vector<T>::assign(size_type __size, const_reference __value) {
   delete[] __data_;
+  __data_ = nullptr;
+  __begin_ = nullptr;
+  __end_ = nullptr;
   
   __size_ = __size;
   __capacity_ = __size;

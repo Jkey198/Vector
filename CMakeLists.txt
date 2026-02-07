@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 # Project name and version
 project(Vector VERSION 1.0 LANGUAGES CXX)
@@ -15,24 +15,19 @@ else()
     add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
-# Include directories
-include_directories(${PROJECT_SOURCE_DIR}/inlcude)
+# Main executable
+add_executable(test main.cpp)
 
-# Source files
-set(SOURCES
-    source/main.cpp
-)
-
-# Create executable
-add_executable(vector_app ${SOURCES})
+# Include the current directory for headers
+target_include_directories(test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Set output directory
-set_target_properties(vector_app PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
+set_target_properties(test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# Optional: Enable testing
-enable_testing()
+# Add tests subdirectory
+add_subdirectory(tests)
 
 # Print configuration summary
 message(STATUS "")
