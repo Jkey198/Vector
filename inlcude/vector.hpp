@@ -74,12 +74,13 @@ template<typename T>
 Vector<T>::Vector(size_type __size, value_type __value) {
   __size_ = __size;
   __capacity_ = __size_;
-  __data_ = new value_type[__capacity_];
-  
+
+  iterator buffer = new value_type[__capacity_ * sizeof(value_type)];
+  __data_ = new (buffer) value_type();
   for (size_type i = 0; i < __size_; ++i) {
-    *(__data_ + i) = __value;
+    new (&(*(__data_ + i))) value_type(__value);
   }
-  
+
   __begin_ = __data_;
   __end_ = __data_ + __size_;
 }
@@ -89,9 +90,10 @@ Vector<T>::Vector(const Vector& __other) {
   __size_ = __other.__size_;
   __capacity_ = __other.__capacity_;
   
-  __data_ = new value_type[__capacity_];
+  iterator buffer  = new value_type[__other.__capacity_ * sizeof(value_type)];
+  __data_ = new (buffer) value_type();
   for (size_type i = 0; i < __size_; ++i) {
-    *(__data_ + i) = *(__other.__data_ + i);
+    new (&(*(__data_ + i))) value_type(*(__other.__data_ + i));
   }
 
   __begin_ = __data_;
@@ -100,6 +102,9 @@ Vector<T>::Vector(const Vector& __other) {
 
 template<typename T>
 Vector<T>::~Vector() {
+  /*for (size_type i = __size_ - 1; i >= 0; --i) {
+    __data_[i]->~T();
+  }::operator delete(__data_);*/
   delete[] __data_;
 }
 
@@ -112,9 +117,10 @@ Vector<T>& Vector<T>::operator=(const Vector& __other) {
     __size_ = __other.__size_;
     __capacity_ = __other.__capacity_;
     
-    __data_ = new value_type[__capacity_];
+    iterator buffer = new value_type[__capacity_ * sizeof(value_type)];
+    __data_ = new (buffer) value_type();
     for (size_type i = 0; i < __size_; ++i) {
-      *(__data_ + i) = *(__other.__data_ + i);
+      new (&(*(__data_ + i))) value_type(*(__other.__data_ + i));
     }
     
     __begin_ = __data_;
@@ -129,13 +135,16 @@ void Vector<T>::assign(size_type __size, const_reference __value) {
   delete[] __data_;
   
   __size_ = __size;
-  __capacity_ = __size; // * for first time
-  __data_ = new value_type[__capacity_];
+  __capacity_ = __size;
+  
+  iterator buffer = new value_type[__capacity_ * sizeof(value_type)];
+  __data_ = new (buffer) value_type();
+  for (size_type i = 0; i < __size_; ++i) {
+    new (&(*(__data_ + i))) value_type(__value);
+  }
+  
   __begin_ = __data_;
   __end_ = __data_ + __size_;
-  for (size_type i = 0; i < __size_; ++i) {
-    *(__data_ + i) = __value;
-  }
 }
 
 template<typename T>
@@ -228,11 +237,14 @@ void Vector<T>::reserve(size_type __new_capacity) {
   if (__new_capacity <= __capacity_) return;
 
   iterator old_data = __data_;
-  __data_ = new T[__new_capacity];
+  iterator buffer = new value_type[__capacity_ * sizeof(value_type)];
+  __data_ = new (buffer) value_type();
+  
   __begin_ = __end_ = nullptr;
   __capacity_ = __new_capacity;
+  
   for (size_type i = 0; i < __size_; ++i) {
-    *(__data_ + i) = *(old_data + i);
+    new (&(*(__data_ + i))) value_type(*(old_data + i));
   }
 
   delete[] old_data;
@@ -250,11 +262,14 @@ void Vector<T>::shrink_to_fit() {
   if (__size_ < __capacity_) {
     iterator old_data = __data_;
     __capacity_ = __size_;
-    __data_ = new value_type[__capacity_];
+    
+    iterator buffer = new value_type[__capacity_ * sizeof(value_type)];
+    __data_ = new (buffer) value_type();
+    
     __begin_ = __end_ = nullptr;
-
+    
     for (size_type i = 0; i < __size_; ++i) {
-      *(__data_ + i) = *(old_data + i);
+      new (&(*(__data_ + i))) value_type(*(old_data + i));
     }
 
     delete[] old_data;

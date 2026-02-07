@@ -79,8 +79,8 @@ int main() {
   Vec1.shrink_to_fit();
   printKbVectorCapacity(Vec1);*/
   
-  kb::Vector<int> a;
-  a.reserve(6);
+  kb::Vector<int> a(6, 1);
+  // a.reserve(6);
   for (size_t i = 0; i < a.size(); ++i) {
     std::cout << a[i] << " ";
   }
@@ -177,12 +177,6 @@ int main() {
   
   std::cout << "====================================" << std::endl;
   std::cout << "====================================" << std::endl;
-  std::cout << std::endl;
-
-  kb::Vector<int> b(6);
-  for (auto i : b) {
-    std::cout << i << " ";
-  }
   std::cout << std::endl;
   
   // kb::Vector<int> a(5, 1);
