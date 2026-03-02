@@ -8,18 +8,18 @@ set(CMAKE_CXX_STANDARD 98)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Compiler warnings
-if(MSVC)
-    add_compile_options(/W4)
-else()
-    add_compile_options(-Wall -Wextra -pedantic)
-endif()
-
 # Main executable
 add_executable(test main.cpp)
 
 # Include the current directory for headers
 target_include_directories(test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Compiler warnings (per-target to avoid affecting GoogleTest)
+if(MSVC)
+    target_compile_options(test PRIVATE /W4)
+else()
+    target_compile_options(test PRIVATE -Wall -Werror -pedantic)
+endif()
 
 # Set output directory
 set_target_properties(test PROPERTIES
@@ -28,12 +28,3 @@ set_target_properties(test PROPERTIES
 
 # Add tests subdirectory
 add_subdirectory(tests)
-
-# Print configuration summary
-message(STATUS "")
-message(STATUS "Configuration Summary:")
-message(STATUS "  Project:      ${PROJECT_NAME}")
-message(STATUS "  Version:      ${PROJECT_VERSION}")
-message(STATUS "  C++ Standard: ${CMAKE_CXX_STANDARD}")
-message(STATUS "  Build Type:   ${CMAKE_BUILD_TYPE}")
-message(STATUS "")

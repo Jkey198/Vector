@@ -18,5 +18,12 @@ add_executable(tests test.cpp)
 # Include parent directory for vector.hpp
 target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
+# Compiler warnings (per-target to avoid affecting GoogleTest)
+if(MSVC)
+    target_compile_options(tests PRIVATE /W4)
+else()
+    target_compile_options(tests PRIVATE -Wall -Werror -pedantic)
+endif()
+
 # Link Google Test
 target_link_libraries(tests PRIVATE GTest::gtest_main)
