@@ -36,6 +36,17 @@ make          # Build the project
 make clean    # Remove build artifacts
 ```
 
+```bash
+mkdir -p build/ && cd build/
+cmake ..
+cmake --build .
+```
+
+```bash
+./../test       # main test
+./tests/tests   # google tests
+```
+
 ## Usage
 
 ```cpp
