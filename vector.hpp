@@ -4,29 +4,35 @@
 #include <cstddef>
 #include <cmath>
 #include <exception>
+#include <iterator>
 
 namespace kb {
 template<typename T>
 class Vector {
 public:
   /* types */
-  typedef T*                  iterator;
-  typedef T                   value_type;
-  typedef size_t              size_type;
-  typedef value_type&         reference;
-  typedef const value_type&   const_reference;
+  typedef T*                                    iterator;
+  typedef const T*                              const_iterator;
+  typedef T                                     value_type;
+  typedef size_t                                size_type;
+  typedef value_type&                           reference;
+  typedef const value_type&                     const_reference;
+  typedef std::reverse_iterator<iterator>       reverse_iterator;
+  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
   /* constructors : default, copy, iterators */
   Vector(); // * DONE
   Vector(size_type __size, value_type __value = value_type()); // * DONE
   Vector(const Vector& __other); // * DONE
-  
+  Vector(const_iterator __first, const_iterator __last); // * DONE
+
   /* destructor */
   ~Vector(); // * DONE
 
   /* operators */
   Vector& operator=(const Vector& __other); // * DONE
   void assign(size_type __size, const_reference __value); // * DONE
+  void assign(const_iterator __first, const_iterator __last); // * DONE
 
   /* element access */
   reference       at(size_type __pos); // * DONE
@@ -40,10 +46,16 @@ public:
   iterator        data(); // * DONE
   iterator        data() const; // * DONE
 
-  /* iterators */
-  iterator begin(); // * DONE
-  iterator end(); // * DONE
-  
+  /* iterators */
+  iterator                begin(); // * DONE
+  const_iterator          begin() const; // * DONE
+  iterator                end(); // * DONE
+  const_iterator          end() const; // * DONE
+  reverse_iterator        rbegin(); // * DONE
+  const_reverse_iterator  rbegin() const; // * DONE
+  reverse_iterator        rend(); // * DONE
+  const_reverse_iterator  rend() const; // * DONE
+
   /* memory */
   bool      empty() const; // * DONE
   size_type size() const; // * DONE
@@ -53,11 +65,15 @@ public:
   void      shrink_to_fit(); // * DONE
 
   /* methods for working with elements */
-  void clear(); // * DONE
-  void push_back(value_type value); // * DONE
-  void pop_back(); // * DONE
-  void resize(size_type __size); // * DONE
-  void swap(Vector& __other); // * DONE
+  void      clear(); // * DONE
+  iterator  insert(iterator __pos, const_reference __value); // * DONE
+  void      insert(iterator __pos, const_iterator __first, const_iterator __last); // * DONE
+  iterator  erase(iterator __pos); // * DONE
+  iterator  erase(iterator __first, iterator __last); // * DONE
+  void      push_back(value_type value); // * DONE
+  void      pop_back(); // * DONE
+  void      resize(size_type __size); // * DONE
+  void      swap(Vector& __other); // * DONE
 
 private:
   iterator  __begin_;
@@ -94,6 +110,21 @@ Vector<T>::Vector(const Vector& __other) {
   __data_ = new (buffer) value_type();
   for (size_type i = 0; i < __size_; ++i) {
     new (&(*(__data_ + i))) value_type(*(__other.__data_ + i));
+  }
+
+  __begin_ = __data_;
+  __end_ = __data_ + __size_;
+}
+
+template<typename T>
+Vector<T>::Vector(const_iterator __first, const_iterator __last) {
+  __size_ = __last - __first;
+  __capacity_ = __size_;
+
+  iterator buffer = new value_type[__capacity_ * sizeof(value_type)];
+  __data_ = new (buffer) value_type();
+  for (size_type i = 0; i < __size_; ++i) {
+    new (&(*(__data_ + i))) value_type(*(__first + i));
   }
 
   __begin_ = __data_;
@@ -151,6 +182,26 @@ void Vector<T>::assign(size_type __size, const_reference __value) {
     new (&(*(__data_ + i))) value_type(__value);
   }
   
+  __begin_ = __data_;
+  __end_ = __data_ + __size_;
+}
+
+template<typename T>
+void Vector<T>::assign(const_iterator __first, const_iterator __last) {
+  delete[] __data_;
+  __data_ = nullptr;
+  __begin_ = nullptr;
+  __end_ = nullptr;
+
+  __size_ = __last - __first;
+  __capacity_ = __size_;
+
+  iterator buffer = new value_type[__capacity_ * sizeof(value_type)];
+  __data_ = new (buffer) value_type();
+  for (size_type i = 0; i < __size_; ++i) {
+    new (&(*(__data_ + i))) value_type(*(__first + i));
+  }
+
   __begin_ = __data_;
   __end_ = __data_ + __size_;
 }
@@ -219,8 +270,38 @@ typename Vector<T>::iterator Vector<T>::begin() {
 }
 
 template<typename T>
+typename Vector<T>::const_iterator Vector<T>::begin() const {
+  return __begin_;
+}
+
+template<typename T>
 typename Vector<T>::iterator Vector<T>::end() {
   return __end_;
+}
+
+template<typename T>
+typename Vector<T>::const_iterator Vector<T>::end() const {
+  return __end_;
+}
+
+template<typename T>
+typename Vector<T>::reverse_iterator Vector<T>::rbegin() {
+  return reverse_iterator(__end_);
+}
+
+template<typename T>
+typename Vector<T>::const_reverse_iterator Vector<T>::rbegin() const {
+  return const_reverse_iterator(__end_);
+}
+
+template<typename T>
+typename Vector<T>::reverse_iterator Vector<T>::rend() {
+  return reverse_iterator(__begin_);
+}
+
+template<typename T>
+typename Vector<T>::const_reverse_iterator Vector<T>::rend() const {
+  return const_reverse_iterator(__begin_);
 }
 
 template<typename T>
@@ -298,6 +379,80 @@ void Vector<T>::clear() {
 }
 
 template<typename T>
+typename Vector<T>::iterator Vector<T>::insert(iterator __pos, const_reference __value) {
+  size_type index = __pos - __begin_;
+
+  if (__size_ == __capacity_) {
+    size_type new_capacity = (__capacity_ == 0) ? 1 : __capacity_ * 2;
+    reserve(new_capacity);
+  }
+
+  iterator pos = __begin_ + index;
+
+  for (iterator it = __end_; it != pos; --it) {
+    *it = *(it - 1);
+  }
+
+  *pos = __value;
+  ++__size_;
+  __end_ = __data_ + __size_;
+
+  return pos;
+}
+
+template<typename T>
+void Vector<T>::insert(iterator __pos, const_iterator __first, const_iterator __last) {
+  size_type index = __pos - __begin_;
+  size_type count = __last - __first;
+  if (count == 0) return;
+
+  while (__size_ + count > __capacity_) {
+    size_type new_capacity = (__capacity_ == 0) ? 1 : __capacity_ * 2;
+    reserve(new_capacity);
+  }
+
+  iterator pos = __begin_ + index;
+
+  for (iterator it = __end_ + count - 1; it != pos + count - 1; --it) {
+    *it = *(it - count);
+  }
+
+  for (size_type i = 0; i < count; ++i) {
+    *(pos + i) = *(__first + i);
+  }
+
+  __size_ += count;
+  __end_ = __data_ + __size_;
+}
+
+template<typename T>
+typename Vector<T>::iterator Vector<T>::erase(iterator __pos) {
+  for (iterator it = __pos; it != __end_ - 1; ++it) {
+    *it = *(it + 1);
+  }
+
+  --__size_;
+  __end_ = __data_ + __size_;
+
+  return __pos;
+}
+
+template<typename T>
+typename Vector<T>::iterator Vector<T>::erase(iterator __first, iterator __last) {
+  size_type count = __last - __first;
+  if (count == 0) return __first;
+
+  for (iterator it = __first; it != __end_ - count; ++it) {
+    *it = *(it + count);
+  }
+
+  __size_ -= count;
+  __end_ = __data_ + __size_;
+
+  return __first;
+}
+
+template<typename T>
 void Vector<T>::push_back(value_type __value) {
   if (__size_ + 1 > max_size())
     throw std::length_error("Vector");
@@ -348,11 +503,11 @@ void Vector<T>::swap(Vector& __other) {
   if (__other.__begin_ == nullptr && __other.__end_ == nullptr)
     throw std::runtime_error("Vector");
   
-  iterator  cnt_data      = __data_;
-  iterator  cnt_begin     = __begin_;
-  iterator  cnt_end       = __end_;
-  size_type cnt_size      = __size_;
-  size_type cnt_capacity  = __capacity_;
+  iterator  cnt_data     = __data_;
+  iterator  cnt_begin    = __begin_;
+  iterator  cnt_end      = __end_;
+  size_type cnt_size     = __size_;
+  size_type cnt_capacity = __capacity_;
 
   __data_     = __other.__data_;
   __begin_    = __other.__begin_;
@@ -365,6 +520,11 @@ void Vector<T>::swap(Vector& __other) {
   __other.__end_      = cnt_end;
   __other.__size_     = cnt_size;
   __other.__capacity_ = cnt_capacity;
+}
+
+template<typename T>
+void swap(Vector<T>& __a, Vector<T>& __b) {
+  __a.swap(__b);
 }
 
 } // namespace kb

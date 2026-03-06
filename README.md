@@ -1,125 +1,61 @@
-# Vector Container Implementation
+﻿# Лабораторная работа №09
+Срок сдачи работы: 2026-03-07.
 
-Custom implementation of a dynamic array container similar to `std::vector` in C++.
+Оценка выставляется в 10 балльной шкале.
+После истечения срока работа считается не сданной и оценивается в 0 баллов.
 
-## Features
+Все работы проверяются на отсутствие ошибок сборки в автоматическом режиме,
+в случае отсутствия ошибок выполняется ручная проверка кода, в противном
+случае работа оценивается в 0 баллов.
 
-- Dynamic resizing with automatic capacity management
-- Standard container operations (push_back, pop_back, resize, reserve, etc.)
-- Element access via `[]`, `at()`, `front()`, `back()`
-- Iterator support (`begin()`, `end()`)
-- Exception safety for out-of-bounds access
-- Namespace: `kb::Vector<T>`
+В ходе ручной проверки работ оценивается полнота выполнения задания,
+а также качество решения.
 
-## Project Structure
+Компилятор и операционная система, используемые при проверке:
+ GNU Compiler Collection 15.2.0 цель x86_64-slackware-linux
+ система Slackware Linux current 2025-09-01.
+Флаги компиляции: `-Wall` `-Werror` `-pedantic`.
 
-```
-vector/
-├── inlcude/
-│   └── vector.hpp          # Vector template class implementation
-├── source/
-│   └── main.cpp            # Example usage and tests
-├── Makefile                # Build configuration
-└── README.md               # This file
-```
+## STL. Итераторы
 
-## Building
+### Ответвление
+Необходимо создать ответвление (fork) моего репозитория Lab-09 (название
+оставить без изменения, а видимость поставить приватной). Назначить меня в
+новом репозитории соавтором с правами администратора. Вики, Задачи а также
+Проекты отключить.
 
-### Prerequisites
-- C++17 compatible compiler (g++, clang++)
-- Make
+В локальной копии создавать ветки (branch) по необходимости.
 
-### Compilation
+### Этап разработки
+Разработать программу на языке Си++ (ISO/IEC 14882:1998), демонстрирующую
+решение поставленной задачи. Основной код разместить в заголовочном файле
+`Vector.hpp`, тесты в `test.cpp`. По выполненной работе составить отчет
+согласно требованиям ГОСТ 7.32-2017 содержащий диаграмму классов согласно
+спецификации UML 2.0 и предоставить его копию в формате PDF. Все необходимые
+файлы разместить в git-репозитории.
 
-```bash
-make          # Build the project
-make clean    # Remove build artifacts
-```
+Разработать шаблон класса `Vector` содержащий итератор произвольного доступа.
 
-```bash
-mkdir -p build/ && cd build/
-cmake ..
-cmake --build .
-```
+Программа должна содержать файл конфигурации системы CMake.
 
-```bash
-./../test       # main test
-./tests/tests   # google tests
-```
+Для тестов использовать библиотеку GoogleTest.
 
-## Usage
+### Этап обсуждения
+По итогу выполнения работы создать запрос на слияние (pull request) 
+и назначить рецензентами всех ассистентов. 
 
-```cpp
-#include "inlcude/vector.hpp"
-#include <iostream>
+По результатам рецензирования получить минимум один комментарий,
+в случае необходимости внести исправления.
 
-int main() {
-    kb::Vector<int> vec;
-    
-    // Add elements
-    vec.push_back(10);
-    vec.push_back(20);
-    vec.push_back(30);
-    
-    // Access elements
-    std::cout << "Size: " << vec.size() << std::endl;
-    std::cout << "First element: " << vec[0] << std::endl;
-    std::cout << "Last element: " << vec.back() << std::endl;
-    
-    // Iterate
-    for (auto it = vec.begin(); it != vec.end(); ++it) {
-        std::cout << *it << " ";
-    }
-    
-    return 0;
-}
-```
-
-## API Reference
-
-### Constructors
-- `Vector()` - Default constructor
-- `Vector(size_type size, value_type value = value_type())` - Construct with size and initial value
-- `Vector(const Vector& other)` - Copy constructor
-
-### Element Access
-- `at(size_type pos)` - Access element with bounds checking
-- `operator[](size_type pos)` - Access element without bounds checking
-- `front()` - Access first element
-- `back()` - Access last element
-- `data()` - Direct access to underlying array
-
-### Iterators
-- `begin()` - Returns iterator to beginning
-- `end()` - Returns iterator to end
-
-### Capacity
-- `empty()` - Check if container is empty
-- `size()` - Number of elements
-- `capacity()` - Capacity of allocated storage
-- `max_size()` - Maximum possible number of elements
-- `reserve(size_type)` - Reserve storage
-- `shrink_to_fit()` - Reduce capacity to fit size
-
-### Modifiers
-- `clear()` - Clear all elements
-- `push_back(const_reference)` - Add element to end
-- `pop_back()` - Remove last element
-- `resize(size_type)` - Change number of elements
-- `assign(size_type, const_reference)` - Assign new content
-- `swap(Vector&)` - Swap contents with another vector
-
-## Implementation Details
-
-- **Capacity Growth Strategy**: Powers of 2 (doubles when full)
-- **Memory Management**: Raw pointers with manual allocation
-- **Exception Safety**: Basic guarantee for most operations
-- **Iterator Type**: Raw pointer (`T*`)
-
-## Author
-
-Developed as part of HSE Programming Languages course labs.
-
-## License
-
-Educational project - free to use and modify.
+### Справочная литература
+  * Вандевурд Д., Джосаттис Н.М. Шаблоны C++: справочник разработчика. — М.: Издательский дом “Вильямс”, 2003. — 544 с. (глава 3)
+  * Вандевурд Д., Джосаттис Н.М., Грегор  Д. Шаблоны C++. Справочник разработчика, 2-е изд. — СпБ.: ООО “Альфа-книга”, 2018. — 848 с. (глава 2)
+  * Джосьютис Н. С++ Стандартная библиотека. Для профессионалов. — СПб.: Питер, 2004. — 730 с. (глава 7)
+  * Джосаттис Н.М. Стандартная библиотека С++: справочное руководство, 2-е изд. — М.: ООО “И.Д. Вильямс”, 2014. — 1136 с. (глава 9)
+  * Галовиц Я. С++17 STL. Стандартная библиотека шаблонов. — СПб.: Питер, 2018. — 432 с. (глава 3)
+  * [C++ Iterator library](https://en.cppreference.com/w/cpp/iterator)
+  * [std::iterator_traits](https://en.cppreference.com/w/cpp/iterator/iterator_traits)
+  * [std::random_access_iterator_tag](https://en.cppreference.com/w/cpp/iterator/iterator_tags)
+  * [CMake documentation](https://cmake.org/documentation/)
+  * [GoogleTest Primer](https://google.github.io/googletest/primer.html)
+  * Langr J. Modern C++ Programming with Test-Driven Development, 2013
